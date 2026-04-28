@@ -3,7 +3,7 @@ Reads data/use_cases.csv and renders template.html → index.html.
 Run locally:  python scripts/generate.py
 Run in CI:    same command, no arguments needed.
 """
-import csv, json
+import csv, json, sys
 from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
@@ -21,18 +21,24 @@ COLUMN_MAP = {
     "outcome":   "Business Outcome",
 }
 
-COMMA_SPLIT = {"prods", "caps"}  # fields stored as comma-separated lists in the CSV
+COMMA_SPLIT = {"prods", "caps"}
 
 PLACEHOLDER = "/*USE_CASES_DATA_PLACEHOLDER*/[]/*END_USE_CASES_DATA*/"
 
 
 def load_use_cases(csv_path: Path) -> list[dict]:
     use_cases = []
-    with open(csv_path, newline="", encoding="utf-8") as f:
-        for row in csv.DictReader(f):
+    # utf-8-sig handles Microsoft BOM; extra columns (@odata.etag, ItemInternalId) are ignored
+    with open(csv_path, newline="", encoding="utf-8-sig") as f:
+        reader = csv.DictReader(f)
+        print(f"CSV columns found: {reader.fieldnames}")
+        for row in reader:
+            id_raw = row.get("ID", "").strip()
+            if not id_raw.isdigit():
+                continue  # skip header artifacts or empty rows
             entry = {}
             for key, col in COLUMN_MAP.items():
-                value = row[col].strip()
+                value = (row.get(col) or "").strip()
                 if key in COMMA_SPLIT:
                     entry[key] = [v.strip() for v in value.split(",") if v.strip()]
                 elif key == "id":
@@ -49,7 +55,12 @@ def main():
     output_path   = ROOT / "index.html"
 
     use_cases = load_use_cases(csv_path)
-    template  = template_path.read_text(encoding="utf-8")
+
+    if not use_cases:
+        print("ERROR: No use cases loaded — aborting to avoid wiping the site.", file=sys.stderr)
+        sys.exit(1)
+
+    template = template_path.read_text(encoding="utf-8")
 
     assert PLACEHOLDER in template, (
         "Placeholder not found in template.html — "
