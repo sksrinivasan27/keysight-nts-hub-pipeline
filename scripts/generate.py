@@ -3,7 +3,7 @@ Reads data/use_cases.csv and renders template.html → index.html.
 Run locally:  python scripts/generate.py
 Run in CI:    same command, no arguments needed.
 """
-import csv, io, json, sys
+import csv, io, json, re, sys
 from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
@@ -27,21 +27,55 @@ PLACEHOLDER = "/*USE_CASES_DATA_PLACEHOLDER*/[]/*END_USE_CASES_DATA*/"
 
 
 def unwrap(raw: str) -> str:
-    """Power Automate sometimes wraps CSV in {"body":"..."} — strip it if present."""
-    stripped = raw.lstrip()
-    if stripped.startswith('{"body":'):
-        try:
-            return json.loads(stripped)["body"]
-        except Exception:
-            pass
-    return raw
+    """
+    Power Automate wraps the CSV in a JSON envelope: {"body":"<escaped csv>"}.
+    This function strips that envelope and returns the plain CSV string.
+    """
+    stripped = raw.lstrip('﻿').strip()  # remove BOM and whitespace
+
+    if not stripped.startswith('{"body":"'):
+        return stripped  # not wrapped, return as-is
+
+    print("Detected Power Automate JSON wrapper — extracting CSV body...")
+
+    # Method 1: json.loads on the full envelope
+    try:
+        parsed = json.loads(stripped)
+        csv_str = parsed["body"]
+        print(f"json.loads unwrap succeeded ({len(csv_str)} chars)")
+        return csv_str
+    except Exception as e:
+        print(f"json.loads failed ({e}), trying regex extraction...")
+
+    # Method 2: regex extraction + manual JSON string unescaping
+    try:
+        # Extract everything between the opening {"body":" and the closing "}
+        m = re.search(r'^{"body":"(.*)"}\s*$', stripped, re.DOTALL)
+        if m:
+            inner = m.group(1)
+            # Decode JSON escape sequences manually
+            inner = inner.replace('\\r\\n', '\r\n')
+            inner = inner.replace('\\n', '\n')
+            inner = inner.replace('\\r', '\r')
+            inner = inner.replace('\\"', '"')
+            inner = inner.replace('\\\\', '\\')
+            print(f"Regex unwrap succeeded ({len(inner)} chars)")
+            return inner
+    except Exception as e:
+        print(f"Regex extraction failed ({e})")
+
+    print("WARNING: Could not unwrap — using raw content")
+    return stripped
 
 
 def load_use_cases(csv_path: Path) -> list[dict]:
-    raw = unwrap(csv_path.read_text(encoding="utf-8-sig"))
+    raw = csv_path.read_text(encoding="utf-8-sig")
+    csv_text = unwrap(raw)
+
+    reader = csv.DictReader(io.StringIO(csv_text))
+    print(f"CSV columns: {list(reader.fieldnames)}")
+
     use_cases = []
-    reader = csv.DictReader(io.StringIO(raw))
-    print(f"CSV columns found: {list(reader.fieldnames)}")
     for row in reader:
         id_raw = (row.get("ID") or "").strip()
         if not id_raw.isdigit():
