@@ -3,7 +3,7 @@ Reads data/use_cases.csv and renders template.html → index.html.
 Run locally:  python scripts/generate.py
 Run in CI:    same command, no arguments needed.
 """
-import csv, json, sys
+import csv, io, json, sys
 from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
@@ -26,26 +26,36 @@ COMMA_SPLIT = {"prods", "caps"}
 PLACEHOLDER = "/*USE_CASES_DATA_PLACEHOLDER*/[]/*END_USE_CASES_DATA*/"
 
 
+def unwrap(raw: str) -> str:
+    """Power Automate sometimes wraps CSV in {"body":"..."} — strip it if present."""
+    stripped = raw.lstrip()
+    if stripped.startswith('{"body":'):
+        try:
+            return json.loads(stripped)["body"]
+        except Exception:
+            pass
+    return raw
+
+
 def load_use_cases(csv_path: Path) -> list[dict]:
+    raw = unwrap(csv_path.read_text(encoding="utf-8-sig"))
     use_cases = []
-    # utf-8-sig handles Microsoft BOM; extra columns (@odata.etag, ItemInternalId) are ignored
-    with open(csv_path, newline="", encoding="utf-8-sig") as f:
-        reader = csv.DictReader(f)
-        print(f"CSV columns found: {reader.fieldnames}")
-        for row in reader:
-            id_raw = row.get("ID", "").strip()
-            if not id_raw.isdigit():
-                continue  # skip header artifacts or empty rows
-            entry = {}
-            for key, col in COLUMN_MAP.items():
-                value = (row.get(col) or "").strip()
-                if key in COMMA_SPLIT:
-                    entry[key] = [v.strip() for v in value.split(",") if v.strip()]
-                elif key == "id":
-                    entry[key] = int(value)
-                else:
-                    entry[key] = value
-            use_cases.append(entry)
+    reader = csv.DictReader(io.StringIO(raw))
+    print(f"CSV columns found: {list(reader.fieldnames)}")
+    for row in reader:
+        id_raw = (row.get("ID") or "").strip()
+        if not id_raw.isdigit():
+            continue
+        entry = {}
+        for key, col in COLUMN_MAP.items():
+            value = (row.get(col) or "").strip()
+            if key in COMMA_SPLIT:
+                entry[key] = [v.strip() for v in value.split(",") if v.strip()]
+            elif key == "id":
+                entry[key] = int(value)
+            else:
+                entry[key] = value
+        use_cases.append(entry)
     return use_cases
 
 
