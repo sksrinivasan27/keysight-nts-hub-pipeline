@@ -190,6 +190,11 @@
     .cap-list { display: flex; flex-wrap: wrap; gap: 5px; }
     .badge-cap { background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 3px; color: var(--text-secondary); font-size: 10.5px; font-weight: 500; padding: 2px 7px; }
     .outcome-text { font-size: 12.5px; color: var(--ks-web-teal); font-weight: 600; line-height: 1.5; }
+    .diagram-toggle { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); }
+    .diagram-btn { background: none; border: 1px solid var(--border); border-radius: var(--radius); color: var(--text-muted); font-family: inherit; font-size: 11.5px; font-weight: 600; padding: 6px 12px; cursor: pointer; transition: all .15s; display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; letter-spacing: .02em; }
+    .diagram-btn:hover { border-color: var(--ks-web-blue); color: var(--ks-web-blue); background: var(--blue-soft); }
+    .diagram-img-wrap { margin-top: 10px; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; background: var(--bg-subtle); }
+    .diagram-img { display: block; width: 100%; height: auto; }
 
     /* MATRIX VIEW */
     .matrix-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-lg); position: relative; }
@@ -403,9 +408,13 @@ function KeysightLogo() {
 /* ── USE CASE CARD ───────────────────────────────────────────────────────── */
 function UseCaseCard({item, delay}) {
   const [open, setOpen] = useState(false);
+  const [diagOpen, setDiagOpen] = useState(false);
+  const [imgExists, setImgExists] = useState(null);
   const catCls = getCatCls(item.cat);
+  const imgSrc = `assets/diagrams/${item.id}.png`;
   return (
     <div className="uc-card card-anim" style={{animationDelay:`${delay}ms`}}>
+      <img src={imgSrc} style={{display:'none'}} onLoad={()=>setImgExists(true)} onError={()=>setImgExists(false)} />
       <div className="card-stripe" style={{background: getVertColor(item.vert).bg}}/>
       <div className="uc-card-head">
         <div className="badge-row">
@@ -443,6 +452,19 @@ function UseCaseCard({item, delay}) {
           <div className="section-label">Business Outcome</div>
           <p className="outcome-text">{item.outcome}</p>
         </div>
+        {imgExists && (
+          <div className="diagram-toggle">
+            <button className="diagram-btn" onClick={()=>setDiagOpen(d=>!d)}>
+              <span>{diagOpen ? '▼' : '▶'}</span>
+              {diagOpen ? 'Hide Diagram' : 'View Diagram'}
+            </button>
+            {diagOpen && (
+              <div className="diagram-img-wrap">
+                <img src={imgSrc} alt={`Diagram — use case ${item.id}`} className="diagram-img" />
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
