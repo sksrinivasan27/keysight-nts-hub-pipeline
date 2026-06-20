@@ -44,10 +44,10 @@
     @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:.5; } }
     .card-anim { animation: fadeUp .4s ease both; }
     /* ── LAYOUT ─────────────────────────────────────────────────────────── */
-    .app-shell { display: flex; min-height: 100vh; }
-    .sidebar { width: 240px; flex-shrink: 0; background: #fff; border-right: 1px solid var(--border); position: fixed; top: 0; left: 0; bottom: 0; overflow-y: auto; z-index: 300; display: flex; flex-direction: column; }
-    .content-area { margin-left: 240px; margin-right: 280px; min-width: 0; }
-    .right-panel { width: 280px; background: #fff; border-left: 1px solid var(--border); position: fixed; top: 0; right: 0; bottom: 0; overflow-y: auto; z-index: 300; }
+    .app-shell { display: grid; grid-template-columns: 240px 1fr 280px; min-height: 100vh; align-items: start; }
+    .sidebar { grid-column: 1; background: #fff; border-right: 1px solid var(--border); position: sticky; top: 0; height: 100vh; overflow-y: auto; z-index: 300; display: flex; flex-direction: column; }
+    .content-area { grid-column: 2; min-width: 0; }
+    .right-panel { grid-column: 3; background: #fff; border-left: 1px solid var(--border); position: sticky; top: 0; height: 100vh; overflow-y: auto; z-index: 300; }
 
     /* SIDEBAR */
     .sidebar-logo { padding: 20px 18px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
@@ -76,9 +76,9 @@
 
     /* HERO (new) */
     .hero-new { padding: 44px 40px 32px; }
-    .hero-eyebrow-new { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: var(--ks-red); margin-bottom: 14px; }
-    .hero-headline { font-size: 52px; font-weight: 900; color: #1a1a1a; line-height: 1.06; letter-spacing: -.03em; max-width: 680px; margin-bottom: 16px; }
-    .hero-desc-new { font-size: 14.5px; color: var(--text-secondary); line-height: 1.65; max-width: 560px; margin-bottom: 28px; }
+    .hero-eyebrow-new { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: var(--ks-red); margin-bottom: 14px; white-space: nowrap; }
+    .hero-headline { font-size: 40px; font-weight: 900; color: #1a1a1a; line-height: 1.12; letter-spacing: -.02em; max-width: 560px; margin-bottom: 16px; }
+    .hero-desc-new { font-size: 14px; color: var(--text-secondary); line-height: 1.65; max-width: 520px; margin-bottom: 28px; }
     .hero-stats-new { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 0; }
     .hs-item { display: flex; align-items: baseline; gap: 5px; }
     .hs-num { font-size: 20px; font-weight: 800; color: #1a1a1a; letter-spacing: -.02em; }
@@ -1990,7 +1990,7 @@ function App() {
       <div className="content-area">
         <div className="hero-new">
           <div className="hero-eyebrow-new">Network Test Solutions · Sales Enablement Hub</div>
-          <h1 className="hero-headline">Which network test<br/>use case fits your<br/>customer?</h1>
+          <h1 className="hero-headline">Which network test use case fits your customer?</h1>
           <p className="hero-desc-new">
             Comprehensive coverage across 12 industry verticals — Core, Tier-2 Partner Friendly, and Strategic Growth — mapped to every Keysight NTS product. Filter by category, vertical, or product to find the right conversation.
           </p>
@@ -2147,7 +2147,7 @@ function App() {
       </aside>
 
       {/* FOOTER */}
-      <footer className="site-footer" style={{marginLeft:240, marginRight:280}}>
+      <footer className="site-footer" style={{gridColumn:'1 / -1'}}>
         <div className="footer-text">
           <strong>Keysight Technologies</strong> · Network Test &amp; Security · Sales Enablement Hub · 2026
         </div>
