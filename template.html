@@ -636,10 +636,6 @@ function App() {
       <aside className="sidebar">
         <div className="sidebar-logo">
           <KeysightLogo/>
-          <div className="sidebar-brand-text">
-            <div className="sidebar-brand">Network Test Solutions</div>
-            <div className="sidebar-sub">Sales Enablement Hub</div>
-          </div>
         </div>
 
         <div className="sidebar-search">
@@ -713,7 +709,7 @@ function App() {
       {/* ── MAIN CONTENT ── */}
       <div className="content-area">
         <div className="hero-new">
-          <div className="hero-eyebrow-new">Keysight · Network Test Solutions</div>
+          <div className="hero-eyebrow-new">Network Test Solutions · Sales Enablement Hub</div>
           <h1 className="hero-headline">Which network test<br/>use case fits your<br/>customer?</h1>
           <p className="hero-desc-new">
             Comprehensive coverage across 12 industry verticals — Core, Tier-2 Partner Friendly, and Strategic Growth — mapped to every Keysight NTS product. Filter by category, vertical, or product to find the right conversation.
@@ -867,19 +863,6 @@ function App() {
             </div>
           ))}
 
-          <div className="rp-divider"/>
-          <div className="rp-section-label">By Category</div>
-          {Object.entries(CATEGORY_CONFIG).map(([key,cfg])=>{
-            const cnt = USE_CASES.filter(u=>u.cat===key).length;
-            const dotColor = key==='Core'?'var(--ks-red)':key==='Tier-2'?'var(--ks-web-teal)':'var(--ks-web-yellow)';
-            return (
-              <div key={key} className="rp-cat-item" onClick={()=>{setCat(key);setVert(ALL_V);}}>
-                <span style={{width:8,height:8,borderRadius:'50%',background:dotColor,display:'inline-block',flexShrink:0}}/>
-                <span>{cfg.label}</span>
-                <span className="rp-cat-count">{cnt}</span>
-              </div>
-            );
-          })}
         </div>
       </aside>
 
