@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Keysight Network Test Solutions use-case hub for sales teams and channel partners to uncover relevant customer scenarios quickly." />
   <title>Keysight NTS Use Cases</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
   <link rel="shortcut icon" type="image/svg+xml" href="assets/favicon.svg" />
@@ -91,6 +92,27 @@
     .hero-active-filters { margin-top: 14px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     .active-filter-chip { display: inline-flex; align-items: center; gap: 5px; background: var(--accent-soft); border: 1px solid var(--accent-border); border-radius: 20px; padding: 5px 10px; font-size: 11.5px; font-weight: 600; color: var(--ks-dark-red); min-height: 34px; }
     .af-clear { background: none; border: none; cursor: pointer; color: var(--ks-red); font-size: 13px; padding: 0; line-height: 1; display: flex; align-items: center; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 22px 0 20px; }
+    .hero-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 11px 16px; border-radius: 999px; font-weight: 700; font-size: 13px; border: 1px solid transparent; cursor: pointer; transition: all .16s ease; text-decoration: none; }
+    .hero-btn.primary { background: var(--ks-red); color: white; box-shadow: 0 10px 24px rgba(233,0,41,.18); }
+    .hero-btn.primary:hover { transform: translateY(-1px); background: var(--ks-dark-red); }
+    .hero-btn.secondary { background: white; color: var(--ks-web-black); border-color: var(--border-strong); }
+    .hero-btn.secondary:hover { border-color: var(--ks-red); color: var(--ks-red); }
+    .hero-proof-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; max-width: 680px; }
+    .hero-proof-card { background: rgba(255,255,255,.82); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 12px 14px; backdrop-filter: blur(6px); box-shadow: 0 6px 18px rgba(0,0,0,.04); }
+    .hero-proof-title { font-size: 10.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+    .hero-proof-value { font-size: 15px; font-weight: 800; color: var(--text-primary); }
+    .premium-section { margin: 8px 0 28px; padding: 20px 20px 4px; border: 1px solid var(--border); border-radius: var(--radius-xl); background: linear-gradient(135deg, rgba(255,255,255,.95), rgba(247,247,246,.98)); box-shadow: var(--shadow-sm); }
+    .premium-section-header { font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--ks-red); margin-bottom: 8px; }
+    .premium-section-title { font-size: 20px; font-weight: 800; color: var(--text-primary); margin-bottom: 8px; }
+    .premium-section-copy { font-size: 13.5px; color: var(--text-secondary); line-height: 1.7; max-width: 760px; }
+    .benefit-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; margin-top: 16px; }
+    .benefit-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px; }
+    .benefit-card h3 { font-size: 14px; font-weight: 800; color: var(--text-primary); margin-bottom: 8px; }
+    .benefit-card p { font-size: 12.5px; color: var(--text-secondary); line-height: 1.6; }
+    .cta-band { margin: 24px 0 0; padding: 18px 20px; border-radius: var(--radius-xl); background: linear-gradient(135deg, rgba(233,0,41,.08), rgba(48,87,141,.08)); border: 1px solid var(--accent-border); display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    .cta-band h3 { font-size: 16px; font-weight: 800; color: var(--text-primary); }
+    .cta-band p { font-size: 12.5px; color: var(--text-secondary); }
 
     /* CARDS AREA */
     .cards-area { padding: 8px 32px 56px; }
@@ -251,6 +273,12 @@
       .hero-eyebrow-new { white-space: normal; }
       .hero-headline { font-size: 24px; line-height: 1.15; }
       .hero-desc-new { font-size: 12.5px; }
+      .hero-proof-row { grid-template-columns: 1fr; }
+      .hero-actions { flex-direction: column; }
+      .hero-btn { width: 100%; }
+      .premium-section { padding: 16px 14px 4px; }
+      .benefit-grid { grid-template-columns: 1fr; }
+      .cta-band { padding: 16px 14px; }
       .cards-area { padding: 8px 12px 36px; }
       .card-grid { gap: 12px; }
       .cat-header { padding: 14px; }
@@ -741,11 +769,15 @@ function App() {
       {/* ── MAIN CONTENT ── */}
       <div className="content-area">
         <div className="hero-new">
-          <div className="hero-eyebrow-new">Network Test Solutions Use Case Hub</div>
-          <h1 className="hero-headline">Which network test use case fits your customer?</h1>
+          <div className="hero-eyebrow-new">Sales Enablement · Channel Strategy</div>
+          <h1 className="hero-headline">Accelerate every customer conversation with the right network test use case.</h1>
           <p className="hero-desc-new">
-            Explore real-world customer challenges across 12 industry verticals and discover how Keysight NTS solutions help organizations build faster, more secure, and more resilient networks. Filter by industry, use case, or product to uncover the right opportunity.
+            Built for Sales Teams and Channel Partners, this hub turns complex network test scenarios into clear, credible next steps. Explore proven use cases, connect customer challenges to Keysight NTS solutions, and move faster with confidence.
           </p>
+          <div className="hero-actions">
+            <button className="hero-btn primary" onClick={()=>{document.querySelector('.cards-area')?.scrollIntoView({behavior:'smooth',block:'start'});}}>Explore proven use cases</button>
+            <button className="hero-btn secondary" onClick={()=>setQuery('channel')}>See partner-ready scenarios</button>
+          </div>
           <div className="hero-stats-new">
             <div className="hs-item">
               <span className={`hs-num${isFiltered?' red':''}`}>{isFiltered ? stats.count : USE_CASES.length}</span>
@@ -762,6 +794,20 @@ function App() {
               <span className="hs-label">verticals</span>
             </div>
           </div>
+          <div className="hero-proof-row">
+            <div className="hero-proof-card">
+              <div className="hero-proof-title">Built for</div>
+              <div className="hero-proof-value">Sales Teams</div>
+            </div>
+            <div className="hero-proof-card">
+              <div className="hero-proof-title">Trusted by</div>
+              <div className="hero-proof-value">Channel Partners</div>
+            </div>
+            <div className="hero-proof-card">
+              <div className="hero-proof-title">Outcome</div>
+              <div className="hero-proof-value">Faster conversations</div>
+            </div>
+          </div>
           {isFiltered && (
             <div className="hero-active-filters">
               {catFilter!==ALL_C && <span className="active-filter-chip">{catFilter} <button className="af-clear" onClick={()=>setCat(ALL_C)}>×</button></span>}
@@ -770,6 +816,36 @@ function App() {
               {query && <span className="active-filter-chip">"{query}" <button className="af-clear" onClick={()=>setQuery('')}>×</button></span>}
             </div>
           )}
+        </div>
+
+        <div className="premium-section">
+          <div className="premium-section-header">Why teams use this hub</div>
+          <div className="premium-section-title">Turn complexity into a clear path to relevance.</div>
+          <p className="premium-section-copy">
+            Sales teams need more than broad product knowledge. They need a fast, credible way to connect customer pain points to the right solutions. This hub helps teams uncover the most relevant use cases, shorten discovery time, and guide conversations with confidence.
+          </p>
+          <div className="benefit-grid">
+            <div className="benefit-card">
+              <h3>For Sales Teams</h3>
+              <p>Move from generic positioning to targeted conversations built around real customer challenges and measurable outcomes.</p>
+            </div>
+            <div className="benefit-card">
+              <h3>For Channel Partners</h3>
+              <p>Quickly identify partner-ready scenarios, strengthen solution storytelling, and improve handoff quality with less effort.</p>
+            </div>
+            <div className="benefit-card">
+              <h3>For Solution Engineers</h3>
+              <p>Surface the most relevant use cases and technical capabilities without sifting through disconnected content.</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="cta-band">
+          <div>
+            <h3>Ready to guide the next conversation?</h3>
+            <p>Start exploring the use cases that best match your customer’s priorities and move from discovery to action faster.</p>
+          </div>
+          <button className="hero-btn primary" onClick={()=>{document.querySelector('.cards-area')?.scrollIntoView({behavior:'smooth',block:'start'});}}>Start exploring</button>
         </div>
 
         <div className="cards-area">
@@ -904,7 +980,7 @@ function App() {
           <strong>Keysight Technologies</strong> · Network Test Solutions Use Case Hub · 2026
         </div>
         <div className="footer-text">
-          For Keysight Partners &amp; Internal Only · Not for external distribution · {USE_CASES.length} use cases across {ALL_VERTICALS_FLAT.length} verticals
+          Built for Sales Teams, Channel Partners, and Solution Engineers to uncover relevant use cases quickly and guide every conversation with clarity.
         </div>
       </footer>
 
