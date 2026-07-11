@@ -319,7 +319,26 @@
     .vp-core:hover { background: var(--accent-soft); border-color: var(--ks-red); color: var(--ks-dark-red); }
     .vp-tier2:hover { background: var(--teal-soft); border-color: var(--ks-web-teal); color: var(--ks-web-teal); }
     .vp-strategic:hover { background: var(--yellow-soft); border-color: var(--ks-web-yellow); color: #8a5a00; }
-    @media (max-width: 700px) { .shortcut-grid { grid-template-columns: 1fr; } }
+    .auth-shell { min-height: 100vh; display: grid; place-items: center; padding: 24px; background: linear-gradient(135deg, #f3f6fb 0%, #eef3f8 45%, #f7f9fd 100%); }
+    .auth-card { width: min(480px, 100%); background: #ffffff; border: 1px solid #dfe6ef; border-radius: 16px; box-shadow: 0 20px 60px rgba(15, 23, 42, .12); padding: 34px 32px 28px; position: relative; overflow: hidden; }
+    .auth-card::before { content: ''; position: absolute; inset: 0 0 auto 0; height: 4px; background: linear-gradient(90deg, #E90029 0%, #4a86d4 55%, #3a828a 100%); }
+    .auth-top { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+    .auth-logo { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; background: linear-gradient(135deg, #E90029 0%, #b90b20 100%); color: #fff; font-size: 20px; font-weight: 800; box-shadow: 0 8px 20px rgba(233,0,41,.22); }
+    .auth-badge { display: inline-flex; align-items: center; padding: 6px 10px; border-radius: 999px; background: rgba(233,0,41,.08); color: #8b1224; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+    .auth-title { font-size: 28px; font-weight: 800; color: #1f2937; margin: 10px 0 8px; letter-spacing: -.02em; }
+    .auth-copy { font-size: 13.5px; line-height: 1.7; color: #475569; margin-bottom: 20px; }
+    .auth-panel { border: 1px solid #e2e8f0; border-radius: 12px; background: linear-gradient(180deg, #fbfdff, #f7f9fc); padding: 16px; margin-bottom: 16px; }
+    .auth-panel-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .14em; color: #64748b; margin-bottom: 8px; }
+    .auth-panel-item { display: flex; align-items: center; gap: 8px; color: #334155; font-size: 13px; margin-bottom: 6px; }
+    .auth-panel-item:last-child { margin-bottom: 0; }
+    .auth-panel-dot { width: 8px; height: 8px; border-radius: 50%; background: linear-gradient(135deg, #E90029, #4a86d4); flex-shrink: 0; }
+    .auth-form { display: flex; flex-direction: column; gap: 10px; }
+    .auth-btn { min-height: 48px; border: none; border-radius: 999px; background: linear-gradient(90deg, #0f6cbd 0%, #2563eb 100%); color: #fff; font-weight: 700; font-size: 14px; cursor: pointer; transition: transform .15s, box-shadow .15s; box-shadow: 0 10px 24px rgba(37,99,235,.18); }
+    .auth-btn:hover { transform: translateY(-1px); box-shadow: 0 12px 28px rgba(37,99,235,.24); }
+    .auth-btn:active { transform: translateY(0); }
+    .auth-help { margin-top: 12px; font-size: 12px; line-height: 1.6; color: #64748b; }
+    .auth-pill { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; padding: 6px 10px; border-radius: 999px; background: #f8fafc; border: 1px solid #e2e8f0; color: #475569; font-size: 11px; font-weight: 600; }
+    @media (max-width: 700px) { .shortcut-grid { grid-template-columns: 1fr; } .auth-card{padding:24px 20px;} .auth-title{font-size:24px;} }
   </style>
 </head>
 <body>
@@ -1671,6 +1690,81 @@ const USE_CASES = [
   }
 ];
 
+/* ── SSO ACCESS GATE ─────────────────────────────────────────────────────── */
+const AUTH_STORAGE_KEY = 'nts_keysight_sso_auth';
+const DEFAULT_RETURN_URI = 'https://nas-use-cases.keysight.com/';
+const CURRENT_ORIGIN = typeof window !== 'undefined' && window.location && window.location.origin
+  ? window.location.origin
+  : DEFAULT_RETURN_URI;
+const RETURN_URI = CURRENT_ORIGIN.includes('keysight.com') ? CURRENT_ORIGIN.replace(/\/$/, '') + '/' : DEFAULT_RETURN_URI;
+const MICROSOFT_SIGNIN_URL = `https://login.microsoftonline.com/63545f27-3232-4d74-a44d-cdd457063402/oauth2/authorize?client_id=00000003-0000-0ff1-ce00-000000000000&response_mode=form_post&response_type=code%20id_token%20spa_rt&resource=00000003-0000-0ff1-ce00-000000000000&scope=openid&nonce=F848245476F129AC6393B10A37C7372766D95EC0B6B7D9F6-25B344292E2214987FE3C61766B3484875F310C63B9F0C567BB518F1B606CB79&redirect_uri=${encodeURIComponent(RETURN_URI)}&state=OD0wJjMyPUFBTVQ2QUFBQUJRNzI4MlFkU1lLamZBU0pYSiUyRmI4aVo4VzV2aGtCVmRUUW5ISjVMdEE4TXZRNHZUOVBUVWh6a0h3REtuOVElMkZoenZPa1ZoYzVBdlRRayUyRnNYRXY4dGZQT0hRYjlXd2xhSm14OWtWRjlZR0ZVdmF2dzZUODhRalNyRiUyRnFXdkN0YWJLNFpXJTJCMUJhMzVvTk16NU44V2ZwU3A3RWklMkZUZEFpOTVUNjg4QlhuTyUyRnVPd2J4WVQySUpTdCUyQllqelRBUlRvRGxmcHhBQkJ0aExlQUZXNFh5ek9kZVdTalRadVJlbEFneERnemk3ZkJrMGRYWlpKbUNpSTNWM21OcmVWa0ViTUNzcjhrSU55SHNkUnFUSjVvM1lTVjQlMkZOTWZOSEMwWExSbDdFZ1RrJTJCZkIyR3dHdnJyM09Ubkg2aDJFU0lEa2pQUGVBQXdHNkFaMnZLYWJ0UDlxZGQ4Z29ObnVxSnlrRjZlUSUyRkNsSzE3dFhhcmx1ZW9VdXN6cWVGcWhqZUZB&claims=%7B%22id_token%22%3A%7B%22xms_cc%22%3A%7B%22values%22%3A%5B%22CP1%22%5D%7D%7D%7D&wsucxt=1&cobrandid=11bd8083-87e0-41b5-bb78-0bc43c8a8e8a&client-request-id=d4b325a2-40dc-0000-e683-6fbf5d038bda&sso_reload=true`;
+function getStoredAuth() {
+  try {
+    return sessionStorage.getItem(AUTH_STORAGE_KEY) === 'true';
+  } catch (err) {
+    return false;
+  }
+}
+function saveAuth() {
+  try {
+    sessionStorage.setItem(AUTH_STORAGE_KEY, 'true');
+  } catch (err) {
+    // Ignore storage errors in private browsing or blocked cookies.
+  }
+}
+function AuthGate({children}) {
+  const [authenticated, setAuthenticated] = useState(() => getStoredAuth());
+  const [isRedirecting, setIsRedirecting] = useState(false);
+
+  const handleContinue = () => {
+    saveAuth();
+    setIsRedirecting(true);
+    window.location.assign(MICROSOFT_SIGNIN_URL);
+  };
+
+  useEffect(() => {
+    const query = new URLSearchParams(window.location.search);
+    const authSuccess = query.get('auth') === 'success' || query.get('state') || query.get('code');
+    if (authSuccess) {
+      saveAuth();
+      setAuthenticated(true);
+    }
+  }, []);
+
+  if (authenticated) return children;
+  return (
+    <div className="auth-shell">
+      <div className="auth-card">
+        <div className="auth-top">
+          <div className="auth-logo">K</div>
+          <div>
+            <div className="auth-badge">Keysight internal</div>
+          </div>
+        </div>
+        <h1 className="auth-title">Sign in to continue</h1>
+        <p className="auth-copy">
+          This use-case hub is available only to verified Keysight employees and partners. Continue through the corporate Microsoft sign-in flow to access the portal.
+        </p>
+        <div className="auth-panel">
+          <div className="auth-panel-title">Secure access</div>
+          <div className="auth-panel-item"><span className="auth-panel-dot"/>Microsoft Entra authentication</div>
+          <div className="auth-panel-item"><span className="auth-panel-dot"/>Restricted to @keysight.com accounts</div>
+          <div className="auth-panel-item"><span className="auth-panel-dot"/>Returns to the Keysight site after sign-in</div>
+        </div>
+        <div className="auth-form">
+          <button className="auth-btn" type="button" onClick={handleContinue}>
+            {isRedirecting ? 'Redirecting…' : 'Continue with Microsoft'}
+          </button>
+        </div>
+        <div className="auth-help">
+          You will be redirected to the Microsoft sign-in experience for your corporate Keysight account.
+        </div>
+        <div className="auth-pill">🔒 Protected portal</div>
+      </div>
+    </div>
+  );
+}
+
 /* ── HELPERS ─────────────────────────────────────────────────────────────── */
 function getCatCls(cat) {
   if (cat==='Core') return 'core';
@@ -2270,7 +2364,7 @@ function App() {
 
 
 
-ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+ReactDOM.createRoot(document.getElementById('root')).render(<AuthGate><App/></AuthGate>);
 </script>
 </body>
 </html>
