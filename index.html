@@ -133,6 +133,8 @@
     .badge-cat { background: var(--ks-white); color: var(--text-primary); border: 1px solid var(--ks-dark-gray); }
     .badge-prod { background: var(--ks-white); border: 1px solid; }
     .swatch { display: inline-block; width: 10px; height: 10px; flex-shrink: 0; margin-right: 8px; }
+    .vert-icon { display: inline-block; vertical-align: -3px; flex-shrink: 0; margin-right: 7px; }
+    .badge .vert-icon { vertical-align: -2px; margin-right: 5px; }
     .nav-name { display: flex; align-items: center; min-width: 0; }
     .card-divider { height: 1px; background: var(--border); margin: 0 18px; }
     .uc-card-body { padding: 16px 18px 18px; }
@@ -313,7 +315,27 @@ const FALLBACK_COLOR = '#524F56';
 const vertColor = (v) => VERTICAL_COLORS[v] || FALLBACK_COLOR;
 const prodColor = (p) => PRODUCT_COLORS[p] || FALLBACK_COLOR;
 const Swatch = ({color}) => <span className="swatch" style={{background:color}} aria-hidden="true"/>;
-const VertBadge = ({v}) => <span className="badge badge-vert" style={{background:vertColor(v)}}>{v}</span>;
+/* Icons from Lucide (lucide.dev, ISC license). Add new verticals here too. */
+const VERTICAL_ICONS = {
+  'Federal': "<line x1=\"3\" x2=\"21\" y1=\"22\" y2=\"22\" /><line x1=\"6\" x2=\"6\" y1=\"18\" y2=\"11\" /><line x1=\"10\" x2=\"10\" y1=\"18\" y2=\"11\" /><line x1=\"14\" x2=\"14\" y1=\"18\" y2=\"11\" /><line x1=\"18\" x2=\"18\" y1=\"18\" y2=\"11\" /><polygon points=\"12 2 20 7 4 7\" />",
+  'Enterprise': "<path d=\"M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z\" /><path d=\"M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2\" /><path d=\"M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2\" /><path d=\"M10 6h4\" /><path d=\"M10 10h4\" /><path d=\"M10 14h4\" /><path d=\"M10 18h4\" />",
+  'Financial': "<rect width=\"20\" height=\"12\" x=\"2\" y=\"6\" rx=\"2\" /><circle cx=\"12\" cy=\"12\" r=\"2\" /><path d=\"M6 12h.01M18 12h.01\" />",
+  'Service Provider': "<path d=\"M4.9 16.1C1 12.2 1 5.8 4.9 1.9\" /><path d=\"M7.8 4.7a6.14 6.14 0 0 0-.8 7.5\" /><circle cx=\"12\" cy=\"9\" r=\"2\" /><path d=\"M16.2 4.8c2 2 2.26 5.11.8 7.47\" /><path d=\"M19.1 1.9a9.96 9.96 0 0 1 0 14.1\" /><path d=\"M9.5 18h5\" /><path d=\"m8 22 4-11 4 11\" />",
+  'Hyperscaler': "<path d=\"M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z\" />",
+  'Healthcare': "<path d=\"M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z\" /><path d=\"M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27\" />",
+  'Manufacturing': "<path d=\"M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z\" /><path d=\"M17 18h1\" /><path d=\"M12 18h1\" /><path d=\"M7 18h1\" />",
+  'Retail': "<circle cx=\"8\" cy=\"21\" r=\"1\" /><circle cx=\"19\" cy=\"21\" r=\"1\" /><path d=\"M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12\" />",
+  'Technology Companies': "<rect width=\"16\" height=\"16\" x=\"4\" y=\"4\" rx=\"2\" /><rect width=\"6\" height=\"6\" x=\"9\" y=\"9\" rx=\"1\" /><path d=\"M15 2v2\" /><path d=\"M15 20v2\" /><path d=\"M2 15h2\" /><path d=\"M2 9h2\" /><path d=\"M20 15h2\" /><path d=\"M20 9h2\" /><path d=\"M9 2v2\" /><path d=\"M9 20v2\" />",
+  'Energy': "<path d=\"M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z\" />",
+  'AI Infrastructure Providers': "<path d=\"M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z\" /><path d=\"M9 13a4.5 4.5 0 0 0 3-4\" /><path d=\"M6.003 5.125A3 3 0 0 0 6.401 6.5\" /><path d=\"M3.477 10.896a4 4 0 0 1 .585-.396\" /><path d=\"M6 18a4 4 0 0 1-1.967-.516\" /><path d=\"M12 13h4\" /><path d=\"M12 18h6a2 2 0 0 1 2 2v1\" /><path d=\"M12 8h8\" /><path d=\"M16 8V5a2 2 0 0 1 2-2\" /><circle cx=\"16\" cy=\"13\" r=\".5\" /><circle cx=\"18\" cy=\"3\" r=\".5\" /><circle cx=\"20\" cy=\"21\" r=\".5\" /><circle cx=\"20\" cy=\"8\" r=\".5\" />",
+  'Colocation / Data Centers': "<rect width=\"20\" height=\"8\" x=\"2\" y=\"2\" rx=\"2\" ry=\"2\" /><rect width=\"20\" height=\"8\" x=\"2\" y=\"14\" rx=\"2\" ry=\"2\" /><line x1=\"6\" x2=\"6.01\" y1=\"6\" y2=\"6\" /><line x1=\"6\" x2=\"6.01\" y1=\"18\" y2=\"18\" />",
+};
+const VertIcon = ({v, size=16, color}) => (
+  VERTICAL_ICONS[v]
+    ? <svg className="vert-icon" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color||vertColor(v)} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" dangerouslySetInnerHTML={{__html:VERTICAL_ICONS[v]}}/>
+    : <Swatch color={color||vertColor(v)}/>
+);
+const VertBadge = ({v}) => <span className="badge badge-vert" style={{background:vertColor(v)}}><VertIcon v={v} size={12} color="#FFFFFF"/>{v}</span>;
 const ProdBadge = ({p}) => <span className="badge badge-prod" style={{color:prodColor(p),borderColor:prodColor(p)}}>{p}</span>;
 
 const ALL_VERTICALS_FLAT = Object.values(CATEGORY_CONFIG).flatMap(c=>c.verticals);
@@ -1805,7 +1827,7 @@ function MatrixView({cases, onSelectCell, activeCat}) {
               <th className="col-freeze" style={{textAlign:'left',width:230}}>Product</th>
               {visibleGroups.flatMap(([,catCfg])=>
                 catCfg.verticals.map(v=>(
-                  <th key={v} className="vert-head" style={{borderBottom:`3px solid ${vertColor(v)}`}}>{v}</th>
+                  <th key={v} className="vert-head" style={{borderBottom:`3px solid ${vertColor(v)}`}}><VertIcon v={v}/>{v}</th>
                 ))
               )}
             </tr>
@@ -1945,7 +1967,7 @@ function SiteNav({catFilter, vertFilter, prodFilter, onBrowse, onHome, onFinder,
             <div className="nav-group-label">{cfg.label}</div>
             {cfg.verticals.map(v=>(
               <button key={v} className={`nav-link${vertFilter===v?' active':''}`} disabled={!vertCount(v)} onClick={()=>go({vert:v})}>
-                <span className="nav-name"><Swatch color={vertColor(v)}/>{v}</span>
+                <span className="nav-name"><VertIcon v={v}/>{v}</span>
                 <span className="nav-count">{vertCount(v)}</span>
               </button>
             ))}
@@ -2187,7 +2209,7 @@ function App() {
               <div className="shortcut-label">By Vertical</div>
               <div className="vert-pill-grid">
                 {ALL_VERTICALS_FLAT.map(v=>(
-                  <button key={v} className="vert-pill" onClick={()=>browse({vert:v})}><Swatch color={vertColor(v)}/>{v}</button>
+                  <button key={v} className="vert-pill" onClick={()=>browse({vert:v})}><VertIcon v={v}/>{v}</button>
                 ))}
               </div>
             </section>
@@ -2196,7 +2218,7 @@ function App() {
               <div className="latest-grid">
                 {[...USE_CASES].sort((a,b)=>b.id-a.id).slice(0,3).map(item=>(
                   <button key={item.id} className="latest-item" onClick={()=>browse({cat:item.cat,vert:item.vert})}>
-                    <div className="latest-vert"><Swatch color={vertColor(item.vert)}/>{item.vert}</div>
+                    <div className="latest-vert"><VertIcon v={item.vert}/>{item.vert}</div>
                     <div className="latest-name">{item.prob}</div>
                     <div className="latest-prods">{item.prods.slice(0,2).join(' · ')}</div>
                   </button>
@@ -2225,7 +2247,7 @@ function App() {
                       </div>
                       <div className="cat-pills">
                         {cfg?.verticals.map(v=>(
-                          <span key={v} className="cat-pill" onClick={()=>setVert(v)}><Swatch color={vertColor(v)}/>{v}</span>
+                          <span key={v} className="cat-pill" onClick={()=>setVert(v)}><VertIcon v={v}/>{v}</span>
                         ))}
                       </div>
                     </div>
